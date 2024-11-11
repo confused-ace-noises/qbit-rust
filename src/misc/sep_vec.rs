@@ -1,0 +1,70 @@
+use std::{cell::OnceCell, vec};
+
+#[derive(Debug, Clone)]
+pub struct SepVec<T: Clone, U: Clone + Into<String>> {
+    vector: Vec<T>,
+    separator: OnceCell<U>,
+}
+impl<T: Clone, U: Clone> SepVec<T, U>
+where
+    String: From<U>,
+{
+    pub fn new<I>(starting: I, separator: U) -> Self
+    where
+        I: IntoIterator,
+        Vec<T>: FromIterator<<I as IntoIterator>::Item>,
+    {
+        let vec = starting.into_iter().collect::<Vec<T>>();
+
+        let onec = OnceCell::new();
+        onec.set(separator).map_err(|_| "fuck").unwrap();
+        Self {
+            vector: vec,
+            separator: onec,
+        }
+    }
+}
+
+impl<T, U> SepVec<T, U>
+where
+    T: Clone,
+    String: From<U>,
+    U: Into<T> + Clone,
+{
+    pub fn to_vec(&self) -> Vec<T> {
+        let vector = self.vector.clone();
+
+        let mut final_vector: Vec<T> = vec![];
+        let len = vector.len();
+        for x in vector.into_iter().zip(0..len) {
+            final_vector.push(x.0);
+            if x.1 != len - 1 {
+                final_vector.push(Into::<T>::into(self.separator.get().unwrap().clone()));
+            };
+        }
+
+        return final_vector;
+    }
+}
+
+impl<T: Clone, U: Clone> ToString for SepVec<T, U>
+where
+    String: From<U>,
+    T: Into<String>,
+{
+    fn to_string(&self) -> String {
+        let vector = self.vector.clone();
+        let len = vector.len();
+        let mut final_string = String::new();
+        for item in vector.into_iter().zip(0..len) {
+            let x: String = item.0.into();
+            final_string.push_str(x.as_str());
+            if item.1 != len - 1 {
+                final_string
+                    .push_str(Into::<String>::into(self.separator.get().and_then(|k| Some(k.clone())).ok_or("fuck.").unwrap()).as_str());
+            }
+        }
+
+        final_string
+    }
+}
