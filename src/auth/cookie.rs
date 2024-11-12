@@ -2,12 +2,12 @@ use std::time::Instant;
 
 use reqwest::Client;
 
-use super::{creds::Credentials, errors::AuthErrors};
+use super::{api::Api, creds::Credentials, errors::AuthErrors};
 use crate::{error_handling::errors::Error, misc::errors::MiscErrors};
 
 #[derive(Debug, Clone)]
 pub(crate) struct Cookie {
-    cookie: String,
+    pub(crate) cookie: String,
     time_of_creation: Instant,
 } impl Cookie {
     /// makes a new instance of `Cookie`.
@@ -15,7 +15,7 @@ pub(crate) struct Cookie {
         let now = Instant::now();
         
         let response = reqwest_client
-            .post(format!("{}/api/v2/auth/login", authority))
+            .post(format!("{}api/v2/auth/login", authority))
             .header(reqwest::header::REFERER, authority)
             .form(&[("username", credentials.username.clone()), ("password", credentials.password.clone())])
             .send()
@@ -28,7 +28,7 @@ pub(crate) struct Cookie {
             match response.headers().get("set-cookie").and_then(|s| s.to_str().ok()) {
                 Some(cookie) => {
                     return Ok(Cookie {
-                        cookie: cookie.to_string(),
+                        cookie: cookie.to_string().split("=").map(|s| s.to_string()).collect::<Vec<String>>()[1].split(";").map(|s| s.to_string()).collect::<Vec<String>>()[0].clone(),
                         time_of_creation: now,
                     })
                 },
@@ -68,4 +68,11 @@ pub(crate) struct Cookie {
             return Ok(self)
         }
     }
+}
+
+#[tokio::test]
+async fn test() {
+    let api = Api::new("http://localhost:8000/", Credentials::new("admin", "123456")).await.unwrap();
+
+    println!("{}", api.cookie.cookie)
 }

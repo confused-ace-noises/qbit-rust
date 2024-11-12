@@ -9,9 +9,9 @@ use crate::error_handling::errors::Error;
 
 #[derive(Debug, Clone)]
 pub struct Api {
-    authority: String,
-    cookie: Cookie,
-    reqwest_client: Client,
+    pub(crate) authority: String,
+    pub(crate) cookie: Cookie,
+    pub(crate) reqwest_client: Client,
     credentials: Credentials,
 }
 

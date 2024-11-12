@@ -9,7 +9,7 @@ pub enum TorrentType {
 #[derive(Debug, Clone)]
 pub(crate) enum TorrentInner {
     Url(String),
-    RawTorrent(Vec<u8>),
+    RawTorrent(String),
 }
 
 
@@ -23,15 +23,12 @@ impl Torrent {
     /// 
     /// # WARNING
     /// - if the [`TorrentType`] is `Url`, you will need to use an url. if it is a `RawTorrent` you will need to use a file path.
-    /// - the contents of the file in case of `TorrentType::RawTorrent`, the filepath will be read immediately.
-    /// 
-    /// # ERRORS
-    /// - this function only returns an error when the file path provided couldn't be read.
-    pub fn new<S: Into<String>>(url_or_path: S, torrent_type: TorrentType) -> Result<Self, Error> {
+    /// - attention!!! the contents of the file in case of `TorrentType::RawTorrent` will NOT be read by this function, but by the [`Api::add_torrent`] function! make sure the path is accessible.
+    pub fn new<S: Into<String>>(url_or_path: S, torrent_type: TorrentType) -> Self {
         let s = Into::<String>::into(url_or_path);
         match torrent_type {
-            TorrentType::Url => Ok(Self{inner: TorrentInner::Url(s)}),
-            TorrentType::RawTorrent => Ok(Self{inner: {TorrentInner::RawTorrent(std::fs::read(s).map_err(|_| FlatError::TorrentFilePathError.unflatten_err())?)}}),
+            TorrentType::Url => Self{inner: TorrentInner::Url(s)},
+            TorrentType::RawTorrent =>Self{inner: {TorrentInner::RawTorrent(s)}},
         }
     }
 

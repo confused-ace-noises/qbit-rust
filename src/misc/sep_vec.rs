@@ -23,6 +23,18 @@ where
             separator: onec,
         }
     }
+
+    pub fn len_vector(&self) -> usize {
+        self.vector.len()
+    }
+
+    pub fn len_total(&self) -> usize {
+        (self.vector.len()*2)-1
+    }
+
+    pub fn inner_vec(&self) -> Vec<T> {
+        self.vector.clone()
+    }
 }
 
 impl<T, U> SepVec<T, U>
