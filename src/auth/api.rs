@@ -5,7 +5,7 @@ use reqwest::Client;
 use crate::auth::cookie::Cookie;
 
 use super::creds::Credentials;
-use crate::errors::Error;
+use crate::error_handling::errors::Error;
 
 #[derive(Debug, Clone)]
 pub struct Api {

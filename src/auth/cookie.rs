@@ -3,7 +3,7 @@ use std::time::Instant;
 use reqwest::Client;
 
 use super::{creds::Credentials, errors::AuthErrors};
-use crate::{errors::Error, misc::errors::MiscErrors};
+use crate::{error_handling::errors::Error, misc::errors::MiscErrors};
 
 #[derive(Debug, Clone)]
 pub(crate) struct Cookie {
@@ -20,7 +20,7 @@ pub(crate) struct Cookie {
             .form(&[("username", credentials.username.clone()), ("password", credentials.password.clone())])
             .send()
             .await
-            .map_err(|e| Error::MiscError(MiscErrors::ReqwestError(e)))?;
+            .map_err(|e| Error::MiscError(MiscErrors::ReqwestError(e.to_string())))?;
 
         let status = response.status();
 
