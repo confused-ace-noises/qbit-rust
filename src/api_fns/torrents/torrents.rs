@@ -3,7 +3,7 @@ use crate::{error_handling::flat_error::FlatError, Error};
 #[derive(Debug, Clone)]
 pub enum TorrentType {
     Url,
-    RawTorrent,
+    TorrentFile,
 }
 
 #[derive(Debug, Clone)]
@@ -28,7 +28,7 @@ impl Torrent {
         let s = Into::<String>::into(url_or_path);
         match torrent_type {
             TorrentType::Url => Self{inner: TorrentInner::Url(s)},
-            TorrentType::RawTorrent =>Self{inner: {TorrentInner::RawTorrent(s)}},
+            TorrentType::TorrentFile =>Self{inner: {TorrentInner::RawTorrent(s)}},
         }
     }
 
@@ -39,7 +39,7 @@ impl Torrent {
     pub fn get_type(&self) -> TorrentType {
         match self.get_inner() {
             TorrentInner::Url(_) => TorrentType::Url,
-            TorrentInner::RawTorrent(_) => TorrentType::RawTorrent,
+            TorrentInner::RawTorrent(_) => TorrentType::TorrentFile,
         }
     }
 }

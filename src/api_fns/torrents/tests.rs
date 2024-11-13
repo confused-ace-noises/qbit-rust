@@ -1,11 +1,17 @@
-use crate::{api_fns::torrents::torrents::TorrentType, auth::{api::Api, creds::Credentials}};
+use crate::{
+    api_fns::torrents::torrents::TorrentType,
+    auth::{api::Api, creds::Credentials},
+};
 
 use super::{add_torrent::TorrentAddDescriptor, torrents::Torrent};
 
 #[test]
 fn prob_the_only_time_ive_ever_prayed() {
     let x = TorrentAddDescriptor::builder()
-        .torrents(vec![Torrent::new("aaaaaa", TorrentType::Url), Torrent::new("/home/arch/hiiiii", TorrentType::RawTorrent)])
+        .torrents(vec![
+            Torrent::new("aaaaaa", TorrentType::Url),
+            Torrent::new("/home/arch/hiiiii", TorrentType::TorrentFile),
+        ])
         .savepath("/downloads".to_string())
         .cookie("my_cookie_value")
         .category("Movies")
@@ -21,13 +27,39 @@ fn prob_the_only_time_ive_ever_prayed() {
         .auto_tmm(true)
         .sequential_download(true)
         .first_last_piece_prio(false)
-        .build().unwrap();
-        
+        .build()
+        .unwrap();
+
     println!("{:?}a", x)
 }
 
 #[tokio::test]
 async fn nvm_this_is_the_second_time_ive_ever_prayed() {
-    let api = Api::new("http://localhost:6011/", Credentials::new("admin", "123456")).await.unwrap();
-    api.add_torrent(TorrentAddDescriptor::builder().torrents(vec![Torrent::new("/home/arch/Downloads/archlinux-2024.11.01-x86_64.iso.torrent", TorrentType::RawTorrent)]).tags(vec!["aaaa1", "aaaaaa2"]).rename("hiiiii").build().unwrap()).await.unwrap();
+    let mut api = Api::new(
+        "http://localhost:6011/",
+        Credentials::new("admin", "123456"),
+    )
+    .await
+    .unwrap();
+    let descriptor = TorrentAddDescriptor::builder()
+        .torrents(vec![
+            Torrent::new("/home/arch/Downloads/archlinux-2024.11.01-x86_64.iso.torrent", TorrentType::TorrentFile,),
+            Torrent::new("https://urlhere", TorrentType::Url),
+        ])
+        .tags(vec!["aaaa1", "aaaaaa2"])
+        .rename("hiiiii")
+        .build()
+        .unwrap();
+    api.add_torrent(descriptor).await.unwrap();
+}
+
+#[tokio::test]
+async fn nvm_this_is_the_second_time_ive_ever_prayed_pt2() {
+    let mut api = Api::new(
+        "http://localhost:6011/",
+        Credentials::new("admin", "123456"),
+    )
+    .await
+    .unwrap();
+    api.version().await.unwrap();
 }

@@ -15,7 +15,7 @@ pub(crate) struct Cookie {
         let now = Instant::now();
         
         let response = reqwest_client
-            .post(format!("{}api/v2/auth/login", authority))
+            .post(format!("{}/api/v2/auth/login", authority))
             .header(reqwest::header::REFERER, authority)
             .form(&[("username", credentials.username.clone()), ("password", credentials.password.clone())])
             .send()

@@ -303,7 +303,7 @@ impl TorrentAddDescriptorBuilder {
 }
 
 impl Api {
-    pub async fn add_torrent(&self, descriptor: TorrentAddDescriptor) -> Result<(), Error> {
+    pub async fn add_torrent(&mut self, descriptor: TorrentAddDescriptor) -> Result<(), Error> {
         
         if !descriptor.paths.is_empty() {
             let mut form = reqwest::multipart::Form::new();
@@ -324,10 +324,10 @@ impl Api {
             //form = thing(form, descriptor.clone());
 
 
-
-            let response = self.reqwest_client.post(format!("{}api/v2/torrents/add",self.authority))
+            
+            let response = self.reqwest_client.post(format!("{}/api/v2/torrents/add",self.authority))
                 .multipart(form)
-                .header(header::COOKIE, format!("SID={}", self.cookie.cookie.clone()))
+                .header(header::COOKIE, format!("SID={}", self.get_cookie().await?))
                 .send().await.map_err(|e| FlatError::ReqwestError(format!("{}, aaaaa", e.to_string())).unflatten_err())?;
 
             if response.status().is_success() {
@@ -347,9 +347,9 @@ impl Api {
 
             println!("{:?}",form2);
 
-            let response = self.reqwest_client.post(format!("{}api/v2/torrents/add",self.authority))
+            let response = self.reqwest_client.post(format!("{}/api/v2/torrents/add",self.authority))
                 .multipart(form2)
-                .header(header::COOKIE, format!("SID={}", self.cookie.cookie.clone()))
+                .header(header::COOKIE, format!("SID={}", self.get_cookie().await?))
                 .send().await.map_err(|e| FlatError::ReqwestError(format!("{}, aaaaa, but magnets", e.to_string())).unflatten_err())?;
 
             
