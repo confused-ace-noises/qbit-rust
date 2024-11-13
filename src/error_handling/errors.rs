@@ -33,6 +33,7 @@ impl Error {
             },
             Error::MiscError(misc_errors) => match misc_errors {
                 MiscErrors::ReqwestError(s) => FlatError::ReqwestError(s.to_owned()),
+                MiscErrors::JsonSerdeError(s) => FlatError::JsonSerdeError(s.to_owned()),
             },
             Error::ApiError(api_errors) => match api_errors {
                 ApiErrors::TorrentError(torrent_errors) => match torrent_errors {

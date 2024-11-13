@@ -13,6 +13,7 @@ pub enum FlatError {
     TooManyFailedAttempts,
     MiscAuthError(String),
     ReqwestError(String),
+    JsonSerdeError(String),
 }
 
 impl FlatError {
@@ -31,6 +32,7 @@ impl FlatError {
             
             // ---------- MISC ERRORS --------
             FlatError::ReqwestError(error) => Error::MiscError(MiscErrors::ReqwestError(error.clone())),
+            FlatError::JsonSerdeError(error) => Error::MiscError(MiscErrors::ReqwestError(error.clone()))
             // ---------- MISC ERRORS --------
         }
     }

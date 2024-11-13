@@ -61,5 +61,5 @@ async fn nvm_this_is_the_second_time_ive_ever_prayed_pt2() {
     )
     .await
     .unwrap();
-    api.version().await.unwrap();
+    api.app_version().await.unwrap();
 }
